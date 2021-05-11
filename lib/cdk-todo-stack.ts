@@ -22,5 +22,23 @@ export class CdkTodoStack extends cdk.Stack {
       destinationBucket: logoBucket,
       sources: [s3Deployment.Source.asset('./assets')],
     });
+
+    new cdk.CfnOutput(this, 'LogoPath', {
+      value: `https://${logoBucket.bucketDomainName}/corn.jpg`,
+    });
+
+    const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
+      publicReadAccess: true,
+      websiteIndexDocument: 'index.html',
+    });
+
+    new s3Deployment.BucketDeployment(this, 'DeployWebsite', {
+      destinationBucket: websiteBucket,
+      sources: [s3Deployment.Source.asset('../frontend/build')],
+    });
+
+    new cdk.CfnOutput(this, 'WebsiteAddress', {
+      value: websiteBucket.bucketWebsiteUrl,
+    });
   }
 }
